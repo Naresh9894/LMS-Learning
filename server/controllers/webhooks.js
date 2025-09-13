@@ -44,6 +44,6 @@ import User from "../models/user.js";
             }
         }
     }catch(error){
-        res.jsos({sucess: false, message: error.message});
+        res.json({sucess: false, message: error.message});
     }
  }
