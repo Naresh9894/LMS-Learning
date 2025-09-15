@@ -15,6 +15,7 @@ import Course from "../models/course.js";
             "svix-signature": req.headers["svix-signature"]
         });
         const {data, type} = req.body;
+        
         switch(type){
             case 'user.created':{
                 const userData = {
@@ -51,6 +52,8 @@ import Course from "../models/course.js";
     }
  }
 
+ //Stripe Webhooks
+
  const stripeInstance= new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export const stripeWebhooks = async (req, res) => {
@@ -71,12 +74,13 @@ export const stripeWebhooks = async (req, res) => {
             const paymentIntent = event.data.object;
             const paymentIntentId= paymentIntent.id;
 
-            const session = await stripeInstance.checkout.sessions.list({payment_intent: paymentIntentId})
+            const session = await stripeInstance.checkout.sessions.list({
+                payment_intent: paymentIntentId})
 
             const { purchaseId } = session.data[0].metadata;
 
             const purchaseData = await Purchase.findById(purchaseId);
-            const userData = await User.findById(purchaseData.userData);
+            const userData = await User.findById(purchaseData.userId);
             const courseData = await Course.findById(purchaseData.courseId.toString());
 
             courseData.enrolledStudents.push(userData);

@@ -22,7 +22,7 @@ export const updateRoleToEducator = async (req, res) => {
 //add new course
 export const addCourse = async (req, res) => {
     try{
-        const {courseData} = req.body;
+        const { courseData } = req.body;
         const imageFile = req.file;
         const educatorId = req.auth.userId;
 
@@ -61,6 +61,7 @@ export const educatorDashboardData = async (req, res) => {
         const educator = req.auth.userId;
         const courses = await Course.find({educator});
         const totalCourses = courses.length;
+
         const courseIds = courses.map((course) => course._id);
         //total earnings
         const purchases= await Purchase.find({courseId: {$in: courseIds}, status: 'completed'

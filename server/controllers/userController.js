@@ -1,7 +1,7 @@
 import User from "../models/user.js";
-import Purchase from "../models/Purchase.js";
 import Stripe from "stripe";
 import Course from "../models/course.js";
+import Purchase from "../models/Purchase.js";
 
 export const getUserData = async (req, res) => {
     try{
@@ -46,7 +46,7 @@ export const purchaseCourse = async (req, res) => {
         }
         const purchaseData = {
             courseId: courseData._id,
-            userId: userData._id,
+            userId,
             amount:( courseData.coursePrice - courseData.
             discount * courseData.coursePrice/100).toFixed(2),
         }
