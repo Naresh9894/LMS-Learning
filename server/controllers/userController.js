@@ -35,8 +35,8 @@ export const userEnrollledCourses = async (req, res) => {
  //PURCHASE COURSE
 export const purchaseCourse = async (req, res) => {
     try{
-        const {courseId}= req.body;
-        const{origin}= req.headers;
+        const { courseId }= req.body;
+        const{ origin }= req.headers;
         const userId = req.auth.userId;
         const userData = await User.findById(userId);
         const courseData = await Course.findById(courseId);
@@ -48,20 +48,21 @@ export const purchaseCourse = async (req, res) => {
             courseId: courseData._id,
             userId: userData._id,
             amount:( courseData.coursePrice - courseData.
-                discount * courseData.coursePrice/100).toFixed(2),
+            discount * courseData.coursePrice/100).toFixed(2),
         }
         const newPurchase = await Purchase.create(purchaseData);
 
-        //Stipe gateway Initialze
+        //Stripe gateway Initialze
 
-        const stripeInstance = new  Stripe(process.env.STRIPE_SECRET_KEY);
+        const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
         const currency = process.env.CURRENCY.toLowerCase();
 
         //creating line item to for stripe
 
         const line_items = [{
             price_data:{
-                currency, product_data:{
+                currency, 
+                product_data:{
                     name: courseData.courseTitle,
                 },
                 unit_amount: Math.floor(newPurchase.amount)*100
