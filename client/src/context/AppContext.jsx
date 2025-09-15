@@ -3,7 +3,7 @@ import { dummyCourses } from "../assets/assets";
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from 'humanize-duration';
 import { useAuth ,useUser} from "@clerk/clerk-react";
-import { use } from "react";
+
 
 export const AppContext=createContext()
 
