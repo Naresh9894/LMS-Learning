@@ -62,7 +62,7 @@ export const stripeWebhooks = async (req, res) => {
   let event;
 
   try {
-    event = stripeInstance.webhooks.constructEvent(req.body, sig, 
+    event = Stripe.webhooks.constructEvent(req.body, sig, 
         process.env.STRIPE_WEBHOOK_SECRET);
   }
   catch (err) {
@@ -82,8 +82,11 @@ export const stripeWebhooks = async (req, res) => {
             const purchaseData = await Purchase.findById(purchaseId);
             const userData = await User.findById(purchaseData.userId);
             const courseData = await Course.findById(purchaseData.courseId.toString());
+            
+                  console.log({ purchaseData, userData, courseData });
 
-            courseData.enrolledStudents.push(userData);
+
+            courseData.enrolledStudents.push(userData._id);
             await courseData.save();
 
             userData.enrolledCourses.push(courseData._id);
