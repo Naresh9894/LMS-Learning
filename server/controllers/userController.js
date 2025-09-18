@@ -49,7 +49,7 @@ export const purchaseCourse = async (req, res) => {
             courseId: courseData._id,
             userId,
             amount:( courseData.coursePrice - courseData.
-            discount * courseData.coursePrice/100).toFixed(2),
+            discount * courseData.coursePrice/100).toFixed(2)
         }
         const newPurchase = await Purchase.create(purchaseData);
 
@@ -66,7 +66,7 @@ export const purchaseCourse = async (req, res) => {
                 product_data:{
                     name: courseData.courseTitle,
                 },
-                unit_amount: Math.floor(newPurchase.amount)*100
+                unit_amount: Math.floor(Number(newPurchase.amount)*100)
              },
              quantity: 1
         }]
