@@ -7,7 +7,7 @@ import Purchase from "../models/Purchase.js";
 //Api controller to update role to educator
 export const updateRoleToEducator = async (req, res) => {
     try{
-        const userId = req.auth.userId;
+        const userId = req.auth();
 
         await clerkClient.users.updateUserMetadata(userId, {
             publicMetadata: {role: 'educator'}
@@ -33,7 +33,7 @@ export const addCourse = async (req, res) => {
     parsedCourseData.educator = educatorId;
     const newCourse = await Course.create(parsedCourseData);
     const imageUpload = await cloudinary.uploader.upload(imageFile.path)
-    newCourse.coursethumbnail = imageUpload.secure_url;
+    newCourse.courseThumbnail = imageUpload.secure_url;
     await newCourse.save();
     res.json({success: true, message: "Course Added successfully"});
     }catch(error){
