@@ -13,7 +13,7 @@ const Loading = () => {
       },5000)
       return ()=> clearTimeout(timer);
     }
-  },[])
+  },[path,navigate])
   return (
     <div className='min-h-screen flex items-center justify-center'>
       <div className='w-16 sm:w-20 aspect-square border-4
