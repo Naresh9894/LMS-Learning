@@ -46,7 +46,7 @@ const CourseDetails = () => {
         console.log(data);
       if(data.success){
       
-        window.location.replace(session_url);
+        window.location.replace(data.session_url);
       }else{
         toast.error(data.message)
       }
