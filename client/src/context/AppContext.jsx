@@ -59,16 +59,18 @@ export const AppContextProvider =(props)=>{
 
     // Function to calculate average rating of course
 
-    const calculateRating = (course)=>{
-        if(course.courseRatings.length === 0){
-            return 0;
-        }
-        let totalRating = 0;
-        course.courseRatings. forEach(rating =>{
-            totalRating+= rating.rating;
+            const calculateRating = (course) => {
+        const ratings = course.courseRatings || []  // default to empty array
+        if (ratings.length === 0) return 0          // no ratings yet
+
+        let totalRating = 0
+        ratings.forEach(r => {
+            totalRating += r.rating || 0              // handle missing rating value
         })
-        return Math.floor( totalRating / course.courseRatings.length)
-    }
+
+        return Math.floor(totalRating / ratings.length)
+        }
+
     // Function to calculate Course chapter Time
     const calculateChapterTime = (chapter)=>{
         let time =0;
