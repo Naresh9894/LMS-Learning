@@ -7,7 +7,7 @@ import Purchase from "../models/Purchase.js";
 //Api controller to update role to educator
 export const updateRoleToEducator = async (req, res) => {
     try{
-        const userId = req.auth();
+        const userId = req.auth.userId;
 
         await clerkClient.users.updateUserMetadata(userId, {
             publicMetadata: {role: 'educator'}
