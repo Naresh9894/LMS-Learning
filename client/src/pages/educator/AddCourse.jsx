@@ -1,239 +1,490 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import uniqid from 'uniqid'
-import Quill from 'quill' 
-import Theme from 'quill/core/theme';
-import { assets } from '../../assets/assets';
+import Quill from 'quill'
+import { assets } from '../../assets/assets'
 import { AppContext } from '../../context/AppContext'
-import { toast } from 'react-toastify';
-import axios from 'axios';
-const AddCourse = () => {
-  const {backendUrl, getToken} = useContext(AppContext)
-  const quillRef = useRef(null);
-  const editorRef = useRef(null);
+import { toast } from 'react-toastify'
+import axios from 'axios'
+import { theme } from '../../hooks/useAnimationVariants'
 
-  const [courseTitle, setCourseTitle] = useState('')
-  const [coursePrice, setCoursePrice] = useState(0)
-  const [discount, setDiscount] = useState(0)
-  const [image,setImage]= useState(null)
-  const [chapter, setChapter]= useState([])
-  const [showPopup, setShowPopup] = useState(false)
+const AddCourse = () => {
+  const { backendUrl, getToken } = useContext(AppContext)
+  const quillRef = useRef(null)
+  const editorRef = useRef(null)
+
+  const [courseTitle, setCourseTitle]   = useState('')
+  const [coursePrice, setCoursePrice]   = useState(0)
+  const [discount, setDiscount]         = useState(0)
+  const [image, setImage]               = useState(null)
+  const [chapter, setChapter]           = useState([])
+  const [showPopup, setShowPopup]       = useState(false)
   const [currentChapterId, setCurrentChapterId] = useState(null)
-  const [lectureDetails, setLectureDetails] = useState(
-    {
-      lectureTitle:'',
-      lectureDuration:'',
-      lectureUrl:'',
-      isPreviewFree:false,
-    }
-  )
-  const handlechapter=(action, chapterId)=>{
-    if(action==='add'){
-      const title = prompt('Enter Chapter Name:');
-      if(title){
-        const newchapter={
-          chapterId:uniqid(),
-          chapterTitle:title,
-          chapterContent:[],
-          collapsed:false,
-          chapterOrder:chapter.length>0 ? chapter.slice(-1)[0].chapterOrder+ 1: 1,
+  const [lectureDetails, setLectureDetails] = useState({
+    lectureTitle: '',
+    lectureDuration: '',
+    lectureUrl: '',
+    isPreviewFree: false,
+  })
+
+  const handlechapter = (action, chapterId) => {
+    if (action === 'add') {
+      const title = prompt('Enter Chapter Name:')
+      if (title) {
+        const newchapter = {
+          chapterId: uniqid(),
+          chapterTitle: title,
+          chapterContent: [],
+          collapsed: false,
+          chapterOrder: chapter.length > 0 ? chapter.slice(-1)[0].chapterOrder + 1 : 1,
         }
-        setChapter([...chapter,newchapter])
+        setChapter([...chapter, newchapter])
       }
-    }else if(action === 'remove'){
-      setChapter(chapter.filter((chapter)=>chapter.chapterId !== chapterId))
-    }else if(action==='toggle'){
-      setChapter(
-        chapter.map((chapter)=>
-        chapter.chapterId === chapterId ? {...chapter,collapsed:!chapter.collapsed}:chapter)
-      )
+    } else if (action === 'remove') {
+      setChapter(chapter.filter((c) => c.chapterId !== chapterId))
+    } else if (action === 'toggle') {
+      setChapter(chapter.map((c) =>
+        c.chapterId === chapterId ? { ...c, collapsed: !c.collapsed } : c
+      ))
     }
   }
 
-  const handleLecture =(action, chapterId,lectureIndex)=>{
-    if(action==='add'){
+  const handleLecture = (action, chapterId, lectureIndex) => {
+    if (action === 'add') {
       setCurrentChapterId(chapterId)
       setShowPopup(true)
-    }
-    else if(action === 'remove'){
-      setChapter(
-        chapter.map((chapter)=>{
-          if(chapter.chapterId === chapterId){
-            chapter.chapterContent.splice(lectureIndex, 1)
-          }
-          return chapter
-        })
-      )
+    } else if (action === 'remove') {
+      setChapter(chapter.map((c) => {
+        if (c.chapterId === chapterId) c.chapterContent.splice(lectureIndex, 1)
+        return c
+      }))
     }
   }
-    const addLecture=()=>{
-      setChapter(
-        chapter.map((chapter)=>{
-          if(chapter.chapterId === currentChapterId){
-            const newLecture={
-              ...lectureDetails,
-              lectureOrder: chapter.chapterContent.length > 0? chapter.chapterContent.slice(-1)[0].lectureOrder+1 : 1,
-              lectureId:uniqid()
-            }
-            chapter.chapterContent.push(newLecture)
-          }
-          return chapter
-        })
-      )
-      setShowPopup(false)
-      setLectureDeatils({
-        lectureTitle:'',
-        lectureDuration:'',
-        lectureUrl:'',
-        isPreviewFree:false, 
-      })
-    }
-    const handleSubmit = async(e)=>{
-      try{
-        e.preventDefault()
-        if(!image){
-          toast.error('Thumbnail Not Selected')
-        }
-        const courseData = {
-          courseTitle,
-          courseDescription: quillRef.current.root.innerHTML,
-          coursePrice:Number(coursePrice),
-          discount:Number(discount),
-          courseContent: chapter,
-        }
-        const formData = new FormData()
-        formData.append('courseData',JSON.stringify(courseData))
-        formData.append('image',image)
 
-        const token = await getToken()
-        const { data }= await axios.post(backendUrl + '/api/educator/add-course',formData,{headers:{Authorization:`Bearer ${token}`}})
-
-        if(data.success){
-          toast.success(data.message)
-          setCourseTitle('')
-          setCoursePrice(0)
-          setDiscount(0)
-          setImage(null)
-          setChapter([])
-          quillRef.current.root.innerHTML=""
-        }else{
-          toast.error(data.message)
+  const addLecture = () => {
+    setChapter(chapter.map((c) => {
+      if (c.chapterId === currentChapterId) {
+        const newLecture = {
+          ...lectureDetails,
+          lectureOrder: c.chapterContent.length > 0 ? c.chapterContent.slice(-1)[0].lectureOrder + 1 : 1,
+          lectureId: uniqid(),
         }
-      }catch(error){
-        toast.error(error.message)
+        c.chapterContent.push(newLecture)
       }
-        
+      return c
+    }))
+    setShowPopup(false)
+    setLectureDetails({ lectureTitle: '', lectureDuration: '', lectureUrl: '', isPreviewFree: false })
+  }
+
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault()
+      if (!image) { toast.error('Thumbnail Not Selected'); return }
+      const courseData = {
+        courseTitle,
+        courseDescription: quillRef.current.root.innerHTML,
+        coursePrice: Number(coursePrice),
+        discount: Number(discount),
+        courseContent: chapter,
+      }
+      const formData = new FormData()
+      formData.append('courseData', JSON.stringify(courseData))
+      formData.append('image', image)
+      const token = await getToken()
+      const { data } = await axios.post(backendUrl + '/api/educator/add-course', formData, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      if (data.success) {
+        toast.success(data.message)
+        setCourseTitle(''); setCoursePrice(0); setDiscount(0)
+        setImage(null); setChapter([])
+        quillRef.current.root.innerHTML = ''
+      } else toast.error(data.message)
+    } catch (error) {
+      toast.error(error.message)
     }
-  useEffect(()=>{
-    //Initialize Quill only once
-    if(!quillRef.current&&editorRef.current){
-      quillRef.current=new Quill(editorRef.current,{theme:'snow'})
+  }
+
+  useEffect(() => {
+    if (!quillRef.current && editorRef.current) {
+      quillRef.current = new Quill(editorRef.current, { theme: 'snow' })
     }
-  },[])
+  }, [])
+
+  // ── Shared input style ────────────────────────────────────────────────────
+  const inputStyle = {
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid rgba(212,168,67,0.2)',
+    color: theme.text.primary,
+    fontFamily: "'DM Sans', sans-serif",
+    outline: 'none',
+    borderRadius: '8px',
+    padding: '10px 14px',
+    width: '100%',
+    transition: 'border-color 0.2s ease',
+  }
+
+  const labelStyle = {
+    color: theme.text.secondary,
+    fontSize: '0.8rem',
+    fontFamily: "'DM Sans', sans-serif",
+    letterSpacing: '0.05em',
+    marginBottom: '4px',
+  }
+
   return (
-    <div className='h-screen overflow-scroll flex flex-col items-start justify-between 
-    md:p-8 md:pb-0 p-4 pt-4 pb-0'>
-     <form onSubmit={handleSubmit} className='flex flex-col gap-4 max-w-md w-full text-gray-500'>
-      <div className='flex flex-col gap-1'>
-        <p>Course Title</p>
-        <input onChange={e=>setCourseTitle(e.target.value)} value={courseTitle} type="text" 
-        placeholder='text here' className='outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500'/>
-      </div>
-      <div className='flex flex-col gap-1'>
-        <p>Course Description</p>
-        <div ref={editorRef}></div>
-      </div>
-      <div className='flex items-center justify-between flex-wrap'>
+    <div
+      className='h-screen overflow-scroll flex flex-col items-start md:p-8 md:pb-0 p-4 pt-6 pb-0'
+      style={{ background: theme.navy.deepest }}
+    >
+      {/* Page heading */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className='flex flex-col gap-1 mb-6'
+      >
+        <p className='text-xs uppercase tracking-widest'
+          style={{ color: theme.gold.pure, letterSpacing: '0.2em' }}>
+          Educator
+        </p>
+        <h1 className='text-2xl font-bold'
+          style={{ color: theme.text.primary, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+          Add New Course
+        </h1>
+        <motion.div
+          className='w-10 h-px mt-1'
+          style={{ background: theme.gradients.gold }}
+          initial={{ scaleX: 0, originX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        />
+      </motion.div>
+
+      <motion.form
+        onSubmit={handleSubmit}
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.15 }}
+        className='flex flex-col gap-5 max-w-xl w-full'
+      >
+
+        {/* Course Title */}
         <div className='flex flex-col gap-1'>
-          <p>Course Price</p>
-         <input onChange={e=>setCoursePrice(e.target.value)} value={coursePrice} type="number" 
-        placeholder='0' className='outline-none md:py-2.5 py-2 px-3 rounded border border-gray-500'required/>
+          <p style={labelStyle}>Course Title</p>
+          <input
+            onChange={e => setCourseTitle(e.target.value)}
+            value={courseTitle}
+            type="text"
+            placeholder='Enter course title'
+            style={inputStyle}
+            onFocus={e => e.target.style.borderColor = 'rgba(212,168,67,0.5)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(212,168,67,0.2)'}
+          />
         </div>
-        <div className='flex md:flex-row flex-col items-center gap-3 mt-4'>
-          <p>Course Thumbnail</p>
-          <label htmlFor="thumbnailImage" className='flex items-center gap-3'>
-            <img src={assets.file_upload_icon} alt="icon" className='p-3 bg-blue-500 rounded' />
-            <input type="file" id='thumbnailImage' onChange={e=> setImage(e.target.files[0])} accept='image/*' hidden />
-            <img className='max-h-10' src={image ? URL.createObjectURL(image):''} alt="" />
-          </label>
-        </div>
-      </div>
-      <div className='flex flex-col gap-1'>
-        <p>Discount %</p>
-        <input  onChange={e=>setDiscount(e.target.value)} value={discount} type="number" placeholder='0' min={0} max={100} className='outline-none md:py-2.5 py-2 w-28 px-3 
-        rounded border border-gray-500'required />
-      </div>
-      {/*adding chapter &comments*/}
-      <div>
-        {chapter.map((chapter, chapterIndex)=>(
-          <div key={chapterIndex} className='bg-white border rounded-lg mb-4'>
-            <div className='flex justify-between items-center p-4 border-b'>
-              <div className='flex items-center'>
-                <img onClick={()=>handlechapter('toggle',chapter.chapterId)}
-                src={assets.dropdown_icon} width={14} alt="icon"  className={`mr-2 cursor-pointer transition-all ${chapter.collapsed && "-rotate-90"}`}/>
-                <span className='font-semibold'>{chapterIndex + 1}.{chapter.chapterTitle}</span>
-              </div>
-              <span className='text-gray-500'>{chapter.chapterContent.length} Lectures</span>
-              <img onClick={()=>handlechapter('remove',chapter.chapterId)} 
-              src={assets.cross_icon} alt="" className='curosor-pointer'/>
-            </div>
-            {!chapter.collapsed &&(
-              <div className='p-4'>
-                  {chapter.chapterContent.map((lecture, lectureIndex)=>(
-                    <div key={lectureIndex} className='flex justify-between items-center mb-2'>
-                        <span>{lectureIndex +1}.{lecture.lectureTitle}-{lecture.lectureDuration}mins -<a href={lecture.lectureUrl}target='_blank' 
-                        className='text-blue-500'>Link</a>-{lecture.isPreviewFree ? 'Free Preview' : 'Paid'}</span>
-                        <img src={assets.cross_icon} alt="" onClick={()=>handleLecture('remove',chapter.chapterId, lectureIndex)} className='cursor-pointer' />
-                    </div>
-                  ))}
-                  <div className='inline-flex bg-gray-100 p-2 rounded
-                   cursor-pointer mt-2' onClick={()=>handleLecture('add', chapter.chapterId)}>+ Add Lecture</div>
-              </div>
-            )}
-          </div>
-        ))}
-        <div className='flex justify-center items-center bg-blue-100 p-2 rounded-lg cursor-pointer'onClick={()=>handlechapter('add')}>+ Add Chapter</div>
 
+        {/* Course Description */}
+        <div className='flex flex-col gap-1'>
+          <p style={labelStyle}>Course Description</p>
+          <div
+            ref={editorRef}
+            style={{
+              background: 'rgba(255,255,255,0.05)',
+              borderRadius: '8px',
+              border: '1px solid rgba(212,168,67,0.2)',
+              color: theme.text.primary,
+            }}
+          />
+        </div>
+
+        {/* Price + Thumbnail */}
+        <div className='flex items-start justify-between flex-wrap gap-4'>
+          <div className='flex flex-col gap-1'>
+            <p style={labelStyle}>Course Price</p>
+            <input
+              onChange={e => setCoursePrice(e.target.value)}
+              value={coursePrice}
+              type="number"
+              placeholder='0'
+              required
+              style={{ ...inputStyle, width: '120px' }}
+              onFocus={e => e.target.style.borderColor = 'rgba(212,168,67,0.5)'}
+              onBlur={e => e.target.style.borderColor = 'rgba(212,168,67,0.2)'}
+            />
+          </div>
+
+          <div className='flex flex-col gap-1'>
+            <p style={labelStyle}>Course Thumbnail</p>
+            <label htmlFor="thumbnailImage" className='flex items-center gap-3 cursor-pointer'>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
+                className='p-3 rounded-lg'
+                style={{ background: 'rgba(212,168,67,0.1)', border: '1px solid rgba(212,168,67,0.25)' }}
+              >
+                <img src={assets.file_upload_icon} alt="upload" className='w-5 h-5'
+                  style={{ filter: 'sepia(1) saturate(4) hue-rotate(5deg)' }} />
+              </motion.div>
+              <input type="file" id='thumbnailImage'
+                onChange={e => setImage(e.target.files[0])} accept='image/*' hidden />
+              {image && (
+                <motion.img
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className='max-h-12 rounded-lg'
+                  src={URL.createObjectURL(image)}
+                  alt="thumbnail preview"
+                  style={{ border: '1px solid rgba(212,168,67,0.3)' }}
+                />
+              )}
+            </label>
+          </div>
+        </div>
+
+        {/* Discount */}
+        <div className='flex flex-col gap-1'>
+          <p style={labelStyle}>Discount %</p>
+          <input
+            onChange={e => setDiscount(e.target.value)}
+            value={discount}
+            type="number"
+            placeholder='0'
+            min={0} max={100}
+            required
+            style={{ ...inputStyle, width: '100px' }}
+            onFocus={e => e.target.style.borderColor = 'rgba(212,168,67,0.5)'}
+            onBlur={e => e.target.style.borderColor = 'rgba(212,168,67,0.2)'}
+          />
+        </div>
+
+        {/* Chapters */}
+        <div className='flex flex-col gap-3'>
+          <p style={{ ...labelStyle, fontSize: '0.9rem' }}>Course Content</p>
+
+          <AnimatePresence>
+            {chapter.map((chap, chapterIndex) => (
+              <motion.div
+                key={chap.chapterId}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+                className='rounded-xl overflow-hidden'
+                style={{ border: '1px solid rgba(212,168,67,0.2)', background: 'rgba(255,255,255,0.03)' }}
+              >
+                {/* Chapter header */}
+                <div
+                  className='flex justify-between items-center p-4'
+                  style={{ borderBottom: '1px solid rgba(212,168,67,0.1)' }}
+                >
+                  <div className='flex items-center gap-2'>
+                    <motion.img
+                      onClick={() => handlechapter('toggle', chap.chapterId)}
+                      src={assets.dropdown_icon}
+                      width={14} alt="toggle"
+                      className='cursor-pointer'
+                      animate={{ rotate: chap.collapsed ? -90 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      style={{ filter: 'brightness(3)' }}
+                    />
+                    <span className='font-semibold text-sm'
+                      style={{ color: theme.text.primary, fontFamily: "'DM Sans', sans-serif" }}>
+                      {chapterIndex + 1}. {chap.chapterTitle}
+                    </span>
+                  </div>
+                  <div className='flex items-center gap-4'>
+                    <span className='text-xs' style={{ color: theme.text.muted }}>
+                      {chap.chapterContent.length} Lectures
+                    </span>
+                    <motion.img
+                      onClick={() => handlechapter('remove', chap.chapterId)}
+                      src={assets.cross_icon}
+                      alt="remove"
+                      className='cursor-pointer w-4 h-4'
+                      whileHover={{ scale: 1.2, rotate: 90 }}
+                      transition={{ type: 'spring', stiffness: 300 }}
+                      style={{ filter: 'brightness(3)' }}
+                    />
+                  </div>
+                </div>
+
+                {/* Lectures */}
+                <AnimatePresence>
+                  {!chap.collapsed && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.25 }}
+                      className='p-4 flex flex-col gap-2'
+                    >
+                      {chap.chapterContent.map((lecture, lectureIndex) => (
+                        <div key={lectureIndex}
+                          className='flex justify-between items-center text-xs py-2 px-3 rounded-lg'
+                          style={{
+                            background: 'rgba(212,168,67,0.04)',
+                            border: '1px solid rgba(212,168,67,0.08)',
+                            color: theme.text.secondary,
+                          }}
+                        >
+                          <span>
+                            {lectureIndex + 1}. {lecture.lectureTitle} — {lecture.lectureDuration}mins —{' '}
+                            <a href={lecture.lectureUrl} target='_blank'
+                              style={{ color: theme.gold.bright }}>Link</a> —{' '}
+                            {lecture.isPreviewFree ? 'Free Preview' : 'Paid'}
+                          </span>
+                          <motion.img
+                            src={assets.cross_icon} alt="remove"
+                            onClick={() => handleLecture('remove', chap.chapterId, lectureIndex)}
+                            className='cursor-pointer w-3 h-3 ml-3 flex-shrink-0'
+                            whileHover={{ scale: 1.3, rotate: 90 }}
+                            transition={{ type: 'spring', stiffness: 300 }}
+                            style={{ filter: 'brightness(3)' }}
+                          />
+                        </div>
+                      ))}
+
+                      {/* Add Lecture */}
+                      <motion.div
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => handleLecture('add', chap.chapterId)}
+                        className='inline-flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer text-xs font-medium mt-1 w-fit'
+                        style={{
+                          background: 'rgba(212,168,67,0.08)',
+                          border: '1px solid rgba(212,168,67,0.2)',
+                          color: theme.gold.bright,
+                        }}
+                      >
+                        + Add Lecture
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            ))}
+          </AnimatePresence>
+
+          {/* Add Chapter */}
+          <motion.div
+            whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(212,168,67,0.15)' }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => handlechapter('add')}
+            className='flex justify-center items-center gap-2 p-3 rounded-xl cursor-pointer text-sm font-medium'
+            style={{
+              background: 'rgba(212,168,67,0.06)',
+              border: '1px dashed rgba(212,168,67,0.3)',
+              color: theme.gold.bright,
+              fontFamily: "'DM Sans', sans-serif",
+            }}
+          >
+            + Add Chapter
+          </motion.div>
+        </div>
+
+        {/* Submit */}
+        <motion.button
+          type='submit'
+          whileHover={{ scale: 1.03, boxShadow: '0 0 24px rgba(212,168,67,0.4)' }}
+          whileTap={{ scale: 0.97 }}
+          className='w-max py-3 px-10 rounded-lg text-sm font-semibold my-4'
+          style={{
+            background: theme.gradients.gold,
+            color: theme.navy.deepest,
+            fontFamily: "'DM Sans', sans-serif",
+            willChange: 'transform',
+          }}
+        >
+          Publish Course
+        </motion.button>
+      </motion.form>
+
+      {/* ── Add Lecture Popup ── */}
+      <AnimatePresence>
         {showPopup && (
-          <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50'>
-            <div className='bg-white text-gray-700 p-4 rounded relative w-full max-w-80'>
-              <h2 className='text-lg font-semibold mb-4'>Add Lecture</h2>
-              
-              <div className='mb-2'>
-                <p>Lecture Title</p>
-                <input type="text" className='mt-1 block w-full border rounded py-1 px-2' 
-                value={lectureDetails.lectureTitle} onChange={(e)=> setLectureDetails({...lectureDetails,lectureTitle: e.target.value})} />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className='fixed inset-0 flex items-center justify-center z-50'
+            style={{ background: 'rgba(5,13,26,0.85)', backdropFilter: 'blur(6px)' }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+              className='relative p-6 rounded-2xl w-full max-w-sm'
+              style={{
+                background: theme.navy.mid,
+                border: '1px solid rgba(212,168,67,0.25)',
+                boxShadow: '0 24px 60px rgba(0,0,0,0.5)',
+              }}
+            >
+              <h2 className='text-lg font-semibold mb-5'
+                style={{ color: theme.text.primary, fontFamily: "'Cormorant Garamond', serif" }}>
+                Add Lecture
+              </h2>
+
+              {/* Popup fields */}
+              {[
+                { label: 'Lecture Title',     key: 'lectureTitle',    type: 'text'   },
+                { label: 'Duration (minutes)', key: 'lectureDuration', type: 'number' },
+                { label: 'Lecture URL',        key: 'lectureUrl',      type: 'text'   },
+              ].map(({ label, key, type }) => (
+                <div key={key} className='mb-3 flex flex-col gap-1'>
+                  <p style={labelStyle}>{label}</p>
+                  <input
+                    type={type}
+                    style={inputStyle}
+                    value={lectureDetails[key]}
+                    onChange={e => setLectureDetails({ ...lectureDetails, [key]: e.target.value })}
+                    onFocus={e => e.target.style.borderColor = 'rgba(212,168,67,0.5)'}
+                    onBlur={e => e.target.style.borderColor = 'rgba(212,168,67,0.2)'}
+                  />
+                </div>
+              ))}
+
+              <div className='flex items-center gap-3 my-4'>
+                <p style={labelStyle}>Is Preview Free?</p>
+                <input
+                  type="checkbox"
+                  className='scale-125 cursor-pointer'
+                  checked={lectureDetails.isPreviewFree}
+                  onChange={e => setLectureDetails({ ...lectureDetails, isPreviewFree: e.target.checked })}
+                  style={{ accentColor: theme.gold.bright }}
+                />
               </div>
 
-              <div className='mb-2'>
-                <p>Duration (minutes)</p>
-                <input type="number" 
-                className='mt-1 block w-full border rounded py-1 px-2' 
-                value={lectureDetails.lectureDuration} onChange={(e)=> setLectureDetails({...lectureDetails,lectureDuration: e.target.value})} />
-              </div>
+              <motion.button
+                type='button'
+                onClick={addLecture}
+                className='w-full py-2.5 rounded-lg text-sm font-semibold'
+                style={{
+                  background: theme.gradients.gold,
+                  color: theme.navy.deepest,
+                  fontFamily: "'DM Sans', sans-serif",
+                }}
+                whileHover={{ scale: 1.02, boxShadow: '0 0 20px rgba(212,168,67,0.3)' }}
+                whileTap={{ scale: 0.97 }}
+              >
+                Add Lecture
+              </motion.button>
 
-              <div className='mb-2'>
-                <p>Lecture URL</p>
-                <input type="text" className='mt-1 block w-full border rounded py-1 px-2' 
-                value={lectureDetails.lectureUrl} 
-                onChange={(e)=> setLectureDetails({...lectureDetails,lectureUrl: e.target.value})} />
-              </div>
-
-              <div className='flex gap-2 my-4'>
-                <p>Is Preview Free?</p>
-                <input type="checkbox" className='mt-1 scale-125' 
-                checked={lectureDetails.isPreviewFree} 
-                onChange={(e)=> setLectureDetails({...lectureDetails,isPreviewFree: e.target.checked})} />
-              </div>
-              <button type='button' className='w-full bg-blue-400 text-white px-4 py-2 rounded'onClick={addLecture}>Add</button>
-              <img  onClick={()=>setShowPopup(false)} src={assets.cross_icon} alt="" className='absolute top-4 right-4 w-4 cursor-pointer'/>
-            </div>
-          </div>
-        )
-        }
-      </div>
-      <button type='submit' 
-      className='bg-black text-white w-max py-2.5 px-8 rounded my-4 '>ADD</button>
-     </form>
+              <motion.img
+                onClick={() => setShowPopup(false)}
+                src={assets.cross_icon}
+                alt="close"
+                className='absolute top-4 right-4 w-4 cursor-pointer'
+                style={{ filter: 'brightness(3)' }}
+                whileHover={{ scale: 1.2, rotate: 90 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

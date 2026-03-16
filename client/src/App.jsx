@@ -14,7 +14,9 @@ import StudentsEnrolled from './pages/educator/StudentsEnrolled'
 import Navbar from './components/student/navbar'
 import "quill/dist/quill.snow.css";
 import { ToastContainer } from 'react-toastify';
-
+import Chatbot from './chatbot'
+import About from './pages/student/About'
+import Contact from './pages/student/Contact'
 
 
 const App = () => {
@@ -26,6 +28,8 @@ const App = () => {
    
       <Routes>
         <Route path='/' element={<Home />}/>
+        <Route path='/about' element={<About />} />
+        <Route path='/contact' element={<Contact />} />
         <Route path='/course-list' element={<CourseList />}/>
         <Route path='/course-list/:input' element={<CourseList />}/>
         <Route path='/course/:id' element={<CourseDetails />}/>
@@ -39,7 +43,7 @@ const App = () => {
             <Route path='student-enrolled' element={<StudentsEnrolled/>}/>
          </Route>
       </Routes>
-
+      <Chatbot />
     </div>
   )
 }

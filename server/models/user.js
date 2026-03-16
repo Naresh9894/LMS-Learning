@@ -2,13 +2,11 @@ import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   _id: { type: String, required: true },
-  name: { type: String, required: true},
+  name: { type: String, required: true },
   email: { type: String, required: true },
-  imgageUrl : { type: String, required: true },
+  imageUrl: { type: String, required: false, default: '' },  // ✅ fixed typo + not required
   enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
-  
-}, { timestamps: true}
-);
+}, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
 

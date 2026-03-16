@@ -5,10 +5,11 @@ import CoursesSection from '../../components/student/CoursesSection'
 import Testmonialsection from '../../components/student/Testmonialsection'
 import CallToAction from '../../components/student/CallToAction'
 import Footer from '../../components/student/footer'
-
+import { usePageTheme } from '../../context/ThemeContext'
 const Home = () => {
+  const { pageTheme } = usePageTheme()
   return (
-    <div className='flex flex-col items-center space-y-7 text-center'>
+    <div style={{ background: pageTheme.bg, color: pageTheme.text }}>
       <Hero/>
       <Companies/>
       <CoursesSection/>
