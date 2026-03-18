@@ -28,7 +28,7 @@ const Footer = () => {
       >
         {/* Brand */}
         <motion.div variants={item} className='flex flex-col gap-4 max-w-xs'>
-          <img src={assets.mylogo} alt='logo' className='w-36'
+          <img src={assets.logomine} alt='logo' className='w-36'
             style={{ filter: 'brightness(1.1)' }} />
           <p className='text-sm leading-relaxed'
             style={{ color: theme.text.muted, fontFamily: "'DM Sans', sans-serif" }}>
@@ -59,8 +59,8 @@ const Footer = () => {
             {[
               { label: 'Home',           path: '/'            },
               { label: 'About us',       path: '/about'       },
+              { label: 'Courses',     path: '/course-list'     },
               { label: 'Contact us',     path: '/contact'     },
-              { label: 'Privacy policy', path: '/privacy'     },
             ].map(({ label, path }) => (
               <li key={label}>
                 <Link to={path}>

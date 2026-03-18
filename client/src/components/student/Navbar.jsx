@@ -111,7 +111,7 @@ const Navbar = () => {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 80px', background: scrolled ? 'rgba(5,13,26,0.88)' : 'transparent', backdropFilter: scrolled ? 'blur(18px)' : 'none', borderBottom: scrolled ? '1px solid rgba(212,168,67,0.15)' : '1px solid transparent', transition: 'all 0.3s ease' }}>
 
         {/* LEFT — Logo */}
-        <motion.img onClick={() => navigate('/')} src={assets.mylogo} alt='Logo'
+        <motion.img onClick={() => navigate('/')} src={assets.logomine} alt='Logo'
           style={{ width: '160px', cursor: 'pointer', filter: 'brightness(1.1)', flexShrink: 0, willChange: 'transform' }}
           whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 300 }} />
 

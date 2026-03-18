@@ -19,7 +19,7 @@ const Footer = () => {
       <div className='flex items-center gap-4'>
         <img
           className='hidden md:block w-20'
-          src={assets.mylogo}
+          src={assets.logomine}
           alt='logo'
         />
         <div

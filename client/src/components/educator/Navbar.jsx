@@ -28,7 +28,7 @@ const Navbar = () => {
         style={{ willChange: 'transform' }}
       >
         <Link to='/'>
-          <img src={assets.mylogo} alt='Logo' className='w-28 lg:w-32' />
+          <img src={assets.logomine} alt='Logo' className='w-28 lg:w-32' />
         </Link>
       </motion.div>
 
