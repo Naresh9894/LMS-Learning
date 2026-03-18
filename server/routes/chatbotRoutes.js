@@ -6,8 +6,15 @@ import { CourseProgress } from '../models/CourseProgress.js'
 
 const router = express.Router()
 
-// Initialize Groq client
-const groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+// Initialize Groq client lazily so missing env doesn't crash the app
+let groq = null
+const getGroqClient = () => {
+  if (!process.env.GROQ_API_KEY) return null
+  if (!groq) {
+    groq = new Groq({ apiKey: process.env.GROQ_API_KEY })
+  }
+  return groq
+}
 
 // In-memory conversation storage
 const conversationHistory = new Map()
@@ -73,6 +80,14 @@ User Context:
 // ================= CHAT ROUTE =================
 router.post('/chat', async (req, res) => {
   try {
+    const groqClient = getGroqClient()
+    if (!groqClient) {
+      return res.status(503).json({
+        response: "Chatbot is not configured. Please set GROQ_API_KEY.",
+        timestamp: new Date().toISOString()
+      })
+    }
+
     const { message, userId, conversationId } = req.body
 
     if (!message || message.trim() === '') {
@@ -95,7 +110,7 @@ router.post('/chat', async (req, res) => {
     ]
 
     // Call Groq API
-    const chatCompletion = await groq.chat.completions.create({
+    const chatCompletion = await groqClient.chat.completions.create({
       model: 'llama-3.3-70b-versatile',
       messages,
       temperature: 0.2,
