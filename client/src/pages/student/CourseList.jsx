@@ -13,6 +13,7 @@ const CATEGORIES = [
   { label: 'All Courses',           icon: '🎓', value: 'all'                   },
   { label: 'Technology',            icon: '💻', value: 'Technology'             },
   { label: 'Web Development',       icon: '🌐', value: 'Web Development'        },
+  { label: 'Programming Languages', icon: '🧑🏻‍💻', value: 'Programming Languages'  },
   { label: 'AI & Machine Learning', icon: '🤖', value: 'AI & Machine Learning'  },
   { label: 'Design',                icon: '🎨', value: 'Design'                 },
   { label: 'Photography',           icon: '📸', value: 'Photography'            },

@@ -70,31 +70,18 @@ const completePurchase = async (purchaseId) => {
         return;
     }
 
-    const [userData, courseData] = await Promise.all([
-        User.findById(purchaseData.userId),
-        Course.findById(purchaseData.courseId.toString())
+    const [courseRes, userRes] = await Promise.all([
+        Course.updateOne(
+            { _id: purchaseData.courseId },
+            { $addToSet: { enrolledStudents: purchaseData.userId } }
+        ),
+        User.updateOne(
+            { _id: purchaseData.userId },
+            { $addToSet: { enrolledCourses: purchaseData.courseId } }
+        ),
     ]);
 
-    if (courseData && userData) {
-        if (!Array.isArray(courseData.enrolledStudents)) {
-            courseData.enrolledStudents = [];
-        }
-        if (!Array.isArray(userData.enrolledCourses)) {
-            userData.enrolledCourses = [];
-        }
-
-        if (!courseData.enrolledStudents.includes(userData._id)) {
-            courseData.enrolledStudents.push(userData._id);
-            await courseData.save();
-        }
-
-        const alreadyEnrolled = userData.enrolledCourses
-            .some((id) => id.toString() === courseData._id.toString());
-        if (!alreadyEnrolled) {
-            userData.enrolledCourses.push(courseData._id);
-            await userData.save();
-        }
-    } else {
+    if (!courseRes.matchedCount || !userRes.matchedCount) {
         console.warn(`Stripe webhook: user/course missing for purchase ${purchaseId}.`);
     }
 

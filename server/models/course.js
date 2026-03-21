@@ -27,10 +27,11 @@ const courseSchema = new mongoose.Schema({
     // ✅ NEW — department/category field
     category: {
         type: String,
-        default: 'Technology',
+        default: 'Select',
         enum: [
             'Technology',
             'Web Development',
+            'Programming Languages',
             'AI & Machine Learning',
             'Design',
             'Photography',

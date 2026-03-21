@@ -10,9 +10,9 @@ import { theme } from '../../hooks/useAnimationVariants'
 
 // ✅ categories match course.js model exactly
 const CATEGORIES = [
-  'Technology', 'Web Development', 'AI & Machine Learning', 'Design',
-  'Photography', 'Travel', 'Business', 'Music',
-  'Health & Fitness', 'Language', 'Finance', 'Marketing',
+  'Technology', 'Web Development', 'Programming Languages', 'AI & Machine Learning',
+  'Design', 'Photography', 'Travel', 'Business',
+  'Music', 'Health & Fitness', 'Language', 'Finance', 'Marketing',
 ]
 
 const AddCourse = () => {
