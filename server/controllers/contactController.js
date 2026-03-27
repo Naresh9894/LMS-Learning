@@ -19,7 +19,7 @@ export const sendContactEmail = async (req, res) => {
 
     // ── Email to YOU (admin notification) ────────────────────────────────────
     await transporter.sendMail({
-      from: `"Sugoi Learn Contact" <${process.env.CONTACT_EMAIL}>`,
+      from: `"SmartLearn Hub Contact" <${process.env.CONTACT_EMAIL}>`,
       to: process.env.CONTACT_EMAIL,
       subject: `[Contact Form] ${subject || 'New message'} — from ${name}`,
       html: `
@@ -44,7 +44,7 @@ export const sendContactEmail = async (req, res) => {
             </tr>
           </table>
           <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(212,168,67,0.15); font-size: 12px; color: #5a7a9a;">
-            Sent from Sugoi Learn Contact Form
+            Sent from SmartLearn Hub Contact Form
           </div>
         </div>
       `,
@@ -52,9 +52,9 @@ export const sendContactEmail = async (req, res) => {
 
     // ── Auto-reply to user ────────────────────────────────────────────────────
     await transporter.sendMail({
-      from: `"Sugoi Learn" <${process.env.CONTACT_EMAIL}>`,
+      from: `"SmartLearn Hub" <${process.env.CONTACT_EMAIL}>`,
       to: email,
-      subject: `We received your message — Sugoi Learn`,
+      subject: `We received your message — SmartLearn Hub`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #050d1a; color: #f0e6cc; padding: 32px; border-radius: 12px; border: 1px solid rgba(212,168,67,0.3);">
           <h2 style="color: #d4a843; font-size: 24px; margin-bottom: 8px;">Thanks for reaching out, ${name}! 👋</h2>
@@ -65,7 +65,7 @@ export const sendContactEmail = async (req, res) => {
           </div>
           <p style="color: #a8b8d0;">In the meantime, explore our <a href="${process.env.CLIENT_URL}/course-list" style="color: #d4a843;">latest courses</a> or check our <a href="${process.env.CLIENT_URL}/about" style="color: #d4a843;">About page</a>.</p>
           <div style="margin-top: 32px; padding-top: 16px; border-top: 1px solid rgba(212,168,67,0.15); font-size: 12px; color: #5a7a9a;">
-            © 2025 Sugoi Learn — LMS-TECHMANI. All rights reserved.
+            © 2025 SmartLearn Hub. All rights reserved.
           </div>
         </div>
       `,

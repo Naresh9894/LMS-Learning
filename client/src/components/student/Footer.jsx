@@ -121,7 +121,7 @@ const Footer = () => {
       <div className='py-4 px-8 md:px-36 flex flex-col md:flex-row items-center justify-between gap-2'>
         <p className='text-xs'
           style={{ color: theme.text.muted, fontFamily: "'DM Sans', sans-serif" }}>
-          Copyright 2025 © LMS-TECHMANI. All Rights Reserved.
+          Copyright 2025 © SmartLearn Hub. All Rights Reserved.
         </p>
         <div className='w-16 h-px' style={{ background: theme.gradients.gold }} />
       </div>

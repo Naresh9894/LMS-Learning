@@ -111,7 +111,7 @@ const FAQ_DATA = [
   { question: 'How do I enroll in a course?', answer: 'Click on any course, then click "Enroll Now". You will be taken to a secure Stripe checkout. After payment, you get instant access to all course content.' },
   { question: 'Do I get a certificate after completing a course?', answer: 'Yes! Once you complete all lectures, you can download your certificate of completion from the My Enrollments page. Our certificates are recognised by 100+ companies.' },
   { question: 'Can I get a refund if I\'m not satisfied?', answer: 'We offer a 7-day refund policy. If you\'re not happy with the course, contact us within 7 days of purchase and we\'ll process a full refund, no questions asked.' },
-  { question: 'How do I become an educator on Sugoi Learn?', answer: 'Click "Become Educator" in the navbar. Once approved, you can create and publish courses directly from your Educator Dashboard. We review all applications within 48 hours.' },
+  { question: 'How do I become an educator on SmartLearn Hub?', answer: 'Click "Become Educator" in the navbar. Once approved, you can create and publish courses directly from your Educator Dashboard. We review all applications within 48 hours.' },
   { question: 'Is there a mobile app available?', answer: 'Our website is fully mobile-responsive and works great on all devices. A dedicated iOS and Android app is currently in development and will be released soon.' },
   { question: 'How can I reset my password?', answer: 'Your account is managed by Clerk authentication. Click the user avatar in the navbar, then go to Account Settings to change your password or manage your profile.' },
 ]

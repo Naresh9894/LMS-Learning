@@ -18,7 +18,7 @@ const CoursesSection = () => {
 
   return (
     <div
-      className='w-full py-20 px-8 md:px-40'
+      className='w-full py-20 px-4 sm:px-8 md:px-40'
       style={{ background: pageTheme.bg, transition: 'background 0.4s ease' }}
     >
       {/* ── Heading ── */}

@@ -124,13 +124,13 @@ const Dashboard = () => {
           </h2>
 
           <div
-            className='max-w-4xl w-full overflow-hidden rounded-xl'
+            className='max-w-4xl w-full overflow-x-auto rounded-xl'
             style={{
               border: '1px solid rgba(212,168,67,0.15)',
               background: 'rgba(255,255,255,0.03)',
             }}
           >
-            <table className='table-fixed md:table-auto w-full border-collapse'>
+            <table className='table-fixed md:table-auto w-full border-collapse min-w-[680px]'>
               <thead style={{ borderBottom: '1px solid rgba(212,168,67,0.15)' }}>
                 <tr>
                   <th className='px-4 py-3 font-semibold text-center hidden sm:table-cell text-xs uppercase'
@@ -183,13 +183,13 @@ const Dashboard = () => {
           </h2>
 
           <div
-            className='max-w-4xl w-full overflow-hidden rounded-xl mb-6'
+            className='max-w-4xl w-full overflow-x-auto rounded-xl mb-6'
             style={{
               border: '1px solid rgba(212,168,67,0.15)',
               background: 'rgba(255,255,255,0.03)',
             }}
           >
-            <table className='table-fixed md:table-auto w-full border-collapse'>
+            <table className='table-fixed md:table-auto w-full border-collapse min-w-[620px]'>
               <thead style={{ borderBottom: '1px solid rgba(212,168,67,0.15)' }}>
                 <tr>
                   <th className='px-4 py-3 font-semibold text-left text-xs uppercase'

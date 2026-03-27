@@ -9,7 +9,7 @@ export const askChatbot = async (req, res) => {
       {
         model: "phi",
         prompt: `
-You are a helpful LMS tutor.
+You are a helpful SmartLearn Hub tutor.
 Explain clearly step-by-step in simple student language.
 
 Question:

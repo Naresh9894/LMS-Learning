@@ -7,7 +7,7 @@ const Chatbot = ({ userId }) => {
   const [messages, setMessages] = useState([
     {
       role: 'assistant',
-      content: "Hey there! 👋 I'm your LMS assistant. Ask me about courses, enrollments, or anything else!",
+      content: "Hey there! 👋 I'm your SmartLearn Hub Assistant. Ask me about courses, enrollments, or anything else!",
       timestamp: new Date().toISOString()
     }
   ])
@@ -50,7 +50,7 @@ const Chatbot = ({ userId }) => {
     } catch (error) {
       setMessages(prev => [...prev, {
         role: 'assistant',
-        content: "Sorry, I couldn't process that. Please try again! 😕",
+        content: "Sorry, I couldn't process that. Please try again.",
         timestamp: new Date().toISOString()
       }])
     } finally {
@@ -74,7 +74,7 @@ const Chatbot = ({ userId }) => {
     }
     setMessages([{
       role: 'assistant',
-      content: "Hey there! 👋 I'm your LMS assistant. Ask me about courses, enrollments, or anything else!",
+      content: "Hey there! 👋 I'm your SmartLearn Hub Assistant. Ask me about courses, enrollments, or anything else!",
       timestamp: new Date().toISOString()
     }])
     setConversationId(null)
@@ -140,7 +140,7 @@ const Chatbot = ({ userId }) => {
                 <p style={{
                   color: theme.text.primary, fontFamily: "'Cormorant Garamond', serif",
                   fontWeight: 600, fontSize: '15px', margin: 0,
-                }}>LMS Assistant</p>
+                }}>SmartLearn Hub Assistant</p>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
                   <div style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#4ade80' }} />
                   <p style={{ color: theme.text.muted, fontSize: '11px', margin: 0, fontFamily: "'DM Sans', sans-serif" }}>Online</p>
@@ -355,3 +355,4 @@ const Chatbot = ({ userId }) => {
 }
 
 export default Chatbot
+

@@ -1,8 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --background: #0a1628;
+    --foreground: #f4efe6;
+    --skeleton: rgba(212,168,67,0.25);
+    --border: rgba(212,168,67,0.25);
+    --btn-border: rgba(212,168,67,0.35);
+    --input: rgba(255,255,255,0.06);
+    --radius: 0.5rem;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}
+
+@layer components {
+  .g-button {
+    @apply rounded-[var(--radius)] border;
+    border-color: var(--btn-border);
+  }
+}
 
 body {
   background-color: #050d1a;

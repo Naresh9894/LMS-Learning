@@ -87,10 +87,10 @@ const MyEnrollments = () => {
         {/* Table */}
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className='w-full overflow-hidden rounded-xl relative z-10'
+          className='w-full overflow-x-auto rounded-xl relative z-10'
           style={{ border: `1px solid ${pageTheme.border}`, background: pageTheme.bgCard, transition: 'background 0.4s ease' }}>
 
-          <table className='md:table-auto table-fixed w-full'>
+          <table className='md:table-auto table-fixed w-full min-w-[680px]'>
             <thead>
               <tr className='max-sm:hidden' style={{ borderBottom: `1px solid ${pageTheme.border}` }}>
                 {['Course', 'Duration', 'Completed', 'Status'].map(h => (

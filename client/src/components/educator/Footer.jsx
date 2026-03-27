@@ -30,7 +30,7 @@ const Footer = () => {
           className='py-2 text-center text-xs md:text-sm'
           style={{ color: theme.text.muted, fontFamily: "'DM Sans', sans-serif" }}
         >
-          Copyright 2025 © LMS-TECHMANI. All Rights Reserved.
+          Copyright 2025 © SmartLearn Hub. All Rights Reserved.
         </p>
       </div>
 
