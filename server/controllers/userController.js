@@ -63,22 +63,26 @@ export const purchaseCourse = async (req, res) => {
             return res.json({ success: false, message: "Course not found" });
         }
 
+        const amountInInr = (courseData.coursePrice - courseData.discount * courseData.coursePrice / 100);
+        const currency = process.env.CURRENCY.toLowerCase();
+        const usdInrRate = Number(process.env.USD_INR_RATE || 83);
+        const chargeAmount = currency === 'usd' ? (amountInInr / usdInrRate) : amountInInr;
+
         const purchaseData = {
             courseId: courseData._id,
             userId,
-            amount: (courseData.coursePrice - courseData.discount * courseData.coursePrice / 100).toFixed(2),
+            amount: chargeAmount.toFixed(2),
         }
 
         const newPurchase = await Purchase.create(purchaseData);
 
         const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
-        const currency = process.env.CURRENCY.toLowerCase();
 
         const line_items = [{
             price_data: {
                 currency,
                 product_data: { name: courseData.courseTitle },
-                unit_amount: Math.floor(newPurchase.amount) * 100
+                unit_amount: Math.round(Number(newPurchase.amount) * 100)
             },
             quantity: 1
         }]
@@ -175,5 +179,106 @@ export const addUserRating = async (req, res) => {
         return res.json({ success: true, message: "Rating added successfully" });
     } catch (error) {
         return res.json({ success: false, message: error.message });
+    }
+}
+
+// Track course views for recommendations
+export const trackCourseView = async (req, res) => {
+    try {
+        const userId = req.auth().userId;
+        const { courseId } = req.body;
+        if (!courseId) return res.json({ success: false, message: 'Course ID required' });
+
+        const user = await User.findById(userId);
+        if (!user) return res.json({ success: false, message: 'User not found' });
+
+        const idx = user.courseViews?.findIndex(v => String(v.courseId) === String(courseId)) ?? -1;
+        if (idx >= 0) {
+            user.courseViews[idx].count += 1;
+            user.courseViews[idx].lastViewedAt = new Date();
+        } else {
+            user.courseViews = user.courseViews || [];
+            user.courseViews.push({ courseId, count: 1, lastViewedAt: new Date() });
+        }
+
+        await user.save();
+        res.json({ success: true });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
+    }
+}
+
+// Personalized recommendations (behavior-based)
+export const getRecommendations = async (req, res) => {
+    try {
+        const userId = req.auth().userId;
+        const limit = Math.min(Number(req.query.limit) || 6, 12);
+
+        const user = await User.findById(userId).populate('enrolledCourses');
+        const enrolled = user?.enrolledCourses || [];
+        const enrolledIds = new Set(enrolled.map(c => c._id.toString()));
+
+        // Build category weights from enrollment + completion behavior + views
+        const progressList = await CourseProgress.find({ userId });
+        const progressMap = new Map(progressList.map(p => [String(p.courseId), p]));
+
+        const categoryWeights = {};
+        enrolled.forEach(course => {
+            const totalLectures = course.courseContent?.reduce((sum, ch) =>
+                sum + (ch.chapterContent?.length || 0), 0) || 0;
+            const completed = progressMap.get(String(course._id))?.lectureCompleted?.length || 0;
+            const completionRatio = totalLectures > 0 ? completed / totalLectures : 0;
+            const weight = 1 + completionRatio; // base + engagement
+            categoryWeights[course.category] = (categoryWeights[course.category] || 0) + weight;
+        });
+
+        // Add category weights from course views
+        const views = user?.courseViews || [];
+        if (views.length > 0) {
+            const viewCourseIds = views.map(v => v.courseId);
+            const viewedCourses = await Course.find({ _id: { $in: viewCourseIds } });
+            const viewMap = new Map(views.map(v => [String(v.courseId), v]));
+            viewedCourses.forEach(course => {
+                const v = viewMap.get(String(course._id));
+                if (!v) return;
+                const viewWeight = Math.min(v.count || 1, 5) * 0.3; // cap influence
+                categoryWeights[course.category] = (categoryWeights[course.category] || 0) + viewWeight;
+            });
+        }
+
+        const candidates = await Course.find({ isPublished: true, _id: { $nin: [...enrolledIds] } })
+            .populate({ path: 'educator' });
+
+        const scoreCourse = (course) => {
+            const ratings = course.ratings || course.courseRatings || [];
+            const avgRating = ratings.length === 0 ? 0 : ratings.reduce((s, r) => s + (r.rating || 0), 0) / ratings.length;
+            const ratingScore = avgRating / 5; // 0..1
+            const popularityScore = Math.log10((course.enrolledStudents?.length || 0) + 1) / 2; // 0..~1
+            const ageDays = (Date.now() - new Date(course.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+            const recencyScore = Math.max(0, 30 - ageDays) / 30; // 0..1
+            const categoryScore = categoryWeights[course.category] || 0;
+
+            return (categoryScore * 3) + (ratingScore * 2) + popularityScore + recencyScore;
+        };
+
+        let ranked = candidates
+            .map(c => ({ course: c, score: scoreCourse(c) }))
+            .sort((a, b) => b.score - a.score)
+            .map(x => x.course);
+
+        // Fallback: if no behavior yet, sort by rating + popularity
+        if (Object.keys(categoryWeights).length === 0) {
+            ranked = candidates.sort((a, b) => {
+                const ar = (a.ratings || a.courseRatings || []).reduce((s, r) => s + (r.rating || 0), 0) / Math.max((a.ratings || a.courseRatings || []).length, 1);
+                const br = (b.ratings || b.courseRatings || []).reduce((s, r) => s + (r.rating || 0), 0) / Math.max((b.ratings || b.courseRatings || []).length, 1);
+                const ap = (a.enrolledStudents?.length || 0);
+                const bp = (b.enrolledStudents?.length || 0);
+                return (br * 2 + bp) - (ar * 2 + ap);
+            });
+        }
+
+        res.json({ success: true, courses: ranked.slice(0, limit) });
+    } catch (error) {
+        res.json({ success: false, message: error.message });
     }
 }

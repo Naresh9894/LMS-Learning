@@ -212,7 +212,7 @@ const About = () => {
     { title: '2022', content: <TimelineItem pageTheme={pageTheme} year="Founded" heading="The Idea Was Born" description="Two passionate developers with a dream — to make world-class tech education accessible to everyone. We started with just 3 courses and a small community of 100 students." tags={['3 Courses', 'First 100 Students', 'Bootstrap']} /> },
     { title: '2023', content: <TimelineItem pageTheme={pageTheme} year="Growth" heading="Building the Platform" description="Rebuilt the platform from scratch with React, Node.js and MongoDB. Launched our first paid cohort and reached 10,000 enrolled students across 15 courses." tags={['10K Students', '15 Courses', 'Full Stack Rebuild']} /> },
     { title: '2024', content: <TimelineItem pageTheme={pageTheme} year="Scale" heading="Going Premium" description="Partnered with industry educators, launched live mentorship and AI-powered learning paths. Our community grew to 35,000 learners with a 4.8★ average rating." tags={['35K Learners', 'AI Features', 'Live Mentorship', '4.8★ Rating']} /> },
-    { title: '2025', content: <TimelineItem pageTheme={pageTheme} year="Today" heading="Sugoi Learn — World Class" description="200+ courses across web dev, AI, design and cloud. With 50,000+ students and counting, we are building the future of online learning — one course at a time." tags={['50K+ Students', '200+ Courses', 'Global Reach', 'Certificates']} /> },
+    { title: '2025', content: <TimelineItem pageTheme={pageTheme} year="Today" heading="Smart Learn Hub — World Class" description="200+ courses across web dev, AI, design and cloud. With 50,000+ students and counting, we are building the future of online learning — one course at a time." tags={['50K+ Students', '200+ Courses', 'Global Reach', 'Certificates']} /> },
   ]
 
   return (
@@ -262,7 +262,7 @@ const About = () => {
 
           <motion.p variants={cinematic.item} className='text-lg leading-relaxed max-w-2xl'
             style={{ color: pageTheme.textSec, fontFamily: "'DM Sans', sans-serif", transition: 'color 0.4s ease' }}>
-            Sugoi Learn was built on one belief — that the right education can change anyone's life.
+            Smart Learn Hub was built on one belief — that the right education can change anyone's life.
             We combine world-class instructors, practical projects, and a thriving community
             to give every learner the tools to build their future.
           </motion.p>
@@ -301,7 +301,7 @@ const About = () => {
       <section className='px-8 md:px-20 py-20'>
         <div className='max-w-6xl mx-auto'>
           <SectionHeading eyebrow="Our Mission" title="Why We Do This" pageTheme={pageTheme}
-            subtitle="Education should never be gated by geography, background, or budget. We built Sugoi Learn to tear down those walls." />
+            subtitle="Education should never be gated by geography, background, or budget. We built Smart Learn Hub to tear down those walls." />
           <div className='grid grid-cols-1 md:grid-cols-3 gap-5'>
             <ValueCard icon="🎯" title="Practical First"     delay={0}   pageTheme={pageTheme} description="Every course is built around real projects. No fluff — just skills you can use immediately in the real world." />
             <ValueCard icon="🌍" title="Accessible to All"   delay={0.1} pageTheme={pageTheme} description="Affordable pricing, regional support, and mobile-first design so no learner is left behind." />
@@ -327,7 +327,7 @@ const About = () => {
       {/* ── TEAM ── */}
       <section className='px-8 md:px-20 py-20'>
         <div className='max-w-5xl mx-auto'>
-          <SectionHeading eyebrow="The Team" title="People Behind Sugoi" pageTheme={pageTheme}
+          <SectionHeading eyebrow="The Team" title="People Behind Smart Learn Hub" pageTheme={pageTheme}
             subtitle="A small, passionate team obsessed with making learning better for everyone." />
           <div className='grid grid-cols-2 md:grid-cols-4 gap-5'>
             <TeamCard name="Manikandan A"  role="Founder & CEO"      pageTheme={pageTheme} image="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop&crop=face" delay={0} />
@@ -367,7 +367,7 @@ const About = () => {
             style={{ color: pageTheme.textSec, fontFamily: "'DM Sans', sans-serif", transition: 'color 0.4s ease' }}
             initial={{ opacity: 0 }} whileInView={{ opacity: 1 }}
             viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
-            Join 50,000+ learners already building their future with Sugoi Learn.
+            Join 50,000+ learners already building their future with Smart Learn Hub.
             Your first course is waiting.
           </motion.p>
 

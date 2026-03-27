@@ -175,6 +175,71 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* — Course Analytics — */}
+        <div>
+          <h2 className='pb-4 text-lg font-medium'
+            style={{ color: theme.text.primary, fontFamily: "'Cormorant Garamond', Georgia, serif" }}>
+            Course Analytics
+          </h2>
+
+          <div
+            className='max-w-4xl w-full overflow-hidden rounded-xl mb-6'
+            style={{
+              border: '1px solid rgba(212,168,67,0.15)',
+              background: 'rgba(255,255,255,0.03)',
+            }}
+          >
+            <table className='table-fixed md:table-auto w-full border-collapse'>
+              <thead style={{ borderBottom: '1px solid rgba(212,168,67,0.15)' }}>
+                <tr>
+                  <th className='px-4 py-3 font-semibold text-left text-xs uppercase'
+                    style={{ color: theme.gold.pure }}>Course</th>
+                  <th className='px-4 py-3 font-semibold text-center text-xs uppercase'
+                    style={{ color: theme.gold.pure }}>Enrollments</th>
+                  <th className='px-4 py-3 font-semibold text-center text-xs uppercase'
+                    style={{ color: theme.gold.pure }}>Completion %</th>
+                  <th className='px-4 py-3 font-semibold text-center text-xs uppercase'
+                    style={{ color: theme.gold.pure }}>Quiz Pass %</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(dashboardData.courseStats || []).map((item, index) => (
+                  <tr
+                    key={item.courseId || index}
+                    className='transition-colors duration-200 hover:bg-white/5'
+                    style={{ borderBottom: '1px solid rgba(212,168,67,0.06)' }}
+                  >
+                    <td className='px-4 py-3 truncate text-sm'
+                      style={{ color: theme.text.primary, fontFamily: "'DM Sans', sans-serif" }}>
+                      {item.courseTitle}
+                    </td>
+                    <td className='px-4 py-3 text-center text-sm'
+                      style={{ color: theme.text.secondary, fontFamily: "'DM Sans', sans-serif" }}>
+                      {item.enrolledCount}
+                    </td>
+                    <td className='px-4 py-3 text-center text-sm'
+                      style={{ color: theme.gold.bright, fontFamily: "'DM Sans', sans-serif" }}>
+                      {item.completionRate}%
+                    </td>
+                    <td className='px-4 py-3 text-center text-sm'
+                      style={{ color: theme.gold.bright, fontFamily: "'DM Sans', sans-serif" }}>
+                      {item.totalQuizChapters > 0 ? `${item.quizPassRate}%` : 'N/A'}
+                    </td>
+                  </tr>
+                ))}
+                {(dashboardData.courseStats || []).length === 0 && (
+                  <tr>
+                    <td colSpan={4} className='px-4 py-6  text-center text-sm'
+                      style={{ color: theme.text.muted, fontFamily: "'DM Sans', sans-serif" }}>
+                      No courses yet.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
       </div>
     </div>
   ) : <Loading />

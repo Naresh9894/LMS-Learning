@@ -6,6 +6,11 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true },
   imageUrl: { type: String, required: false, default: '' },  // ✅ fixed typo + not required
   enrolledCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+  courseViews: [{
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: 'Course' },
+    count: { type: Number, default: 0 },
+    lastViewedAt: { type: Date },
+  }],
 }, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);

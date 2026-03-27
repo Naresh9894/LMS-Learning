@@ -232,7 +232,7 @@ const Contact = () => {
       {/* ── INFO CARDS ── */}
       <section className='px-8 md:px-20 py-16'>
         <div className='max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5'>
-          <InfoCard icon="📧" title="Email Us" value="smartlearnhub5636@gmail.com" sub="We reply within 24 hours" delay={0} pageTheme={pageTheme} />
+          <InfoCard icon="📧" title="Email Us" value="smartlearnhub3@gmail.com" sub="We reply within 24 hours" delay={0} pageTheme={pageTheme} />
           <InfoCard icon="📞" title="Call Us" value="+91 98765 43210" sub="Mon–Fri, 9am–6pm IST" delay={0.1} pageTheme={pageTheme} />
           <InfoCard icon="📍" title="Our Office" value="Chennai, Tamil Nadu" sub="India — 600001" delay={0.2} pageTheme={pageTheme} />
         </div>
@@ -408,7 +408,7 @@ const Contact = () => {
           <p className='text-base' style={{ color: pageTheme.textSec, fontFamily: "'DM Sans', sans-serif", transition: 'color 0.4s ease' }}>
             Our team is happy to help. Reach out and we'll get back to you within a day.
           </p>
-          <motion.a href='mailto:hello@sugoilearn.com'
+          <motion.a href='mailto:smartlearnhub3@gmail.com'
             className='px-8 py-3 rounded-full text-sm font-semibold'
             style={{ background: theme.gradients.gold, color: theme.navy.deepest, fontFamily: "'DM Sans', sans-serif", textDecoration: 'none' }}
             whileHover={{ scale: 1.06, boxShadow: '0 0 28px rgba(212,168,67,0.45)' }}

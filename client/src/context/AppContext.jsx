@@ -17,9 +17,10 @@ export const AppContextProvider = (props) => {
     const { user } = useUser()
 
     const [allCourses, setAllCourses] = useState([])
-    const [isEducator, setIsEducator] = useState(false)  // ✅ fixed name
+    const [isEducator, setIsEducator] = useState(false)  
     const [enrolledCourses, setenrolledCourses] = useState([])
     const [userData, setUserData] = useState(null)
+    const [recommendedCourses, setRecommendedCourses] = useState([])
 
     // Fetch all courses
     const fetchAllCourses = async () => {
@@ -108,6 +109,23 @@ export const AppContextProvider = (props) => {
         }
     }
 
+    // Fetch personalized recommendations
+    const fetchRecommendedCourses = async () => {
+        try {
+            const token = await getToken();
+            const { data } = await axios.get(backendUrl + '/api/user/recommendations?limit=4', {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            if (data.success) {
+                setRecommendedCourses(data.courses || []);
+            } else {
+                toast.error(data.message);
+            }
+        } catch (error) {
+            toast.error(error.message);
+        }
+    }
+
     useEffect(() => {
         fetchAllCourses()
     }, [])
@@ -116,15 +134,31 @@ export const AppContextProvider = (props) => {
         if (user) {
             fetchUserData()
             fetchUserEnrolledCourses()
+            fetchRecommendedCourses()
         }
     }, [user])
+
+    // Track course view (for recommendations)
+    const trackCourseView = async (courseId) => {
+        try {
+            const token = await getToken();
+            await axios.post(backendUrl + '/api/user/track-view', { courseId }, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            fetchRecommendedCourses()
+        } catch (error) {
+            // silent
+        }
+    }
 
     const value = {
         currency, allCourses, navigate, calculateRating,
         isEducator, setIsEducator,          // ✅ fixed — consistent name + exported
         calculateNoofLectures, calculateCourseDuration, calculateChapterTime,
         enrolledCourses, fetchUserEnrolledCourses,
-        backendUrl, userData, setUserData, getToken, fetchAllCourses
+        backendUrl, userData, setUserData, getToken, fetchAllCourses,
+        recommendedCourses, fetchRecommendedCourses,
+        trackCourseView
     }
 
     return (

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { AppContext } from '../../context/AppContext'
@@ -21,7 +21,7 @@ const CourseDetails = () => {
   const [playerData, setPlayerData]               = useState(null)
 
   const { calculateRating, calculateNoofLectures, calculateCourseDuration,
-    calculateChapterTime, currency, backendUrl, userData, getToken } = useContext(AppContext)
+    calculateChapterTime, currency, backendUrl, userData, getToken, trackCourseView } = useContext(AppContext)
 
   const fetchCourseData = async () => {
     try {
@@ -49,8 +49,21 @@ const CourseDetails = () => {
       setIsAlreadyEnrolled(userData.enrolledCourses.includes(courseData._id))
   }, [userData, courseData])
 
+  useEffect(() => {
+    if (courseData && userData) {
+      trackCourseView(courseData._id)
+    }
+  }, [courseData, userData])
+
   const toggleSection = (index) =>
     setOpenSection(prev => ({ ...prev, [index]: !prev[index] }))
+
+  const getYouTubeVideoId = (url) => {
+    if (!url) return null
+    const regExp = /(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    const match = url.match(regExp)
+    return match ? match[1] : null
+  }
 
   const ratingCount = courseData
     ? (courseData.ratings || courseData.courseRatings || []).length : 0
@@ -90,7 +103,7 @@ const CourseDetails = () => {
               <p style={{ color: theme.gold.bright }}>{calculateRating(courseData)}</p>
               <div className='flex'>
                 {[...Array(5)].map((_, i) => (
-                  <img key={i} src={i < Math.floor(calculateRating(courseData)) ? assets.star : assets.star_dull_icon} alt='' className='w-3.5 h-3.5' />
+                  <img key={i} src={i < Math.floor(calculateRating(courseData)) ? assets.star : assets.star_blank} alt='' className='w-3.5 h-3.5' />
                 ))}
               </div>
               <p style={{ color: theme.gold.pure }}>({ratingCount} ratings)</p>
@@ -144,14 +157,7 @@ const CourseDetails = () => {
                                   {lecture.lectureTitle}
                                 </p>
                                 <div className='flex gap-3 flex-shrink-0'>
-                                  {lecture.isPreviewFree && (
-                                    <motion.p whileHover={{ scale: 1.05 }}
-                                      onClick={() => setPlayerData({ videoId: lecture.lectureUrl.split('/').pop() })}
-                                      className='cursor-pointer text-xs px-2 py-0.5 rounded-full'
-                                      style={{ color: theme.gold.bright, border: '1px solid rgba(212,168,67,0.3)', background: 'rgba(212,168,67,0.08)' }}>
-                                      Preview
-                                    </motion.p>
-                                  )}
+                                  {/* Preview removed */}
                                   <p style={{ color: pageTheme.textMuted, transition: 'color 0.4s ease' }}>
                                     {humanizeDuration(lecture.lectureDuration * 60 * 1000, { units: ['h', 'm'] })}
                                   </p>
@@ -192,7 +198,36 @@ const CourseDetails = () => {
             }}>
 
             {playerData
-              ? <YouTube videoId={playerData.videoId} opts={{ playerVars: { autoplay: 1 } }} iframeClassName='w-full aspect-video' />
+              ? (() => {
+                const ytId = getYouTubeVideoId(playerData.lectureUrl)
+                const isUpload = playerData.lectureSource === 'upload' || (!ytId && !!playerData.lectureUrl)
+                if (isUpload) {
+                  return <video className='w-full aspect-video' controls src={playerData.lectureUrl} />
+                }
+                if (ytId) {
+                  return (
+                    <YouTube
+                      videoId={ytId}
+                      opts={{
+                        playerVars: {
+                          autoplay: 1,
+                          rel: 0,
+                          modestbranding: 1,
+                          iv_load_policy: 3,
+                          fs: 1,
+                          playsinline: 1,
+                        }
+                      }}
+                      iframeClassName='w-full aspect-video'
+                    />
+                  )
+                }
+                return (
+                  <div className='w-full aspect-video flex items-center justify-center' style={{ background: '#000' }}>
+                    <p style={{ color: '#ff6b6b' }}>Invalid video URL</p>
+                  </div>
+                )
+              })()
               : <img src={courseData.courseThumbnail} alt="thumbnail" className='w-full aspect-video object-cover' />
             }
 

@@ -5,8 +5,17 @@ const lectureSchema = new mongoose.Schema({
     lectureTitle:    { type: String,  required: true },
     lectureDuration: { type: Number,  required: true },
     lectureUrl:      { type: String,  required: true },
+    lectureSource:   { type: String,  enum: ['link', 'upload'], default: 'link' },
     isPreviewFree:   { type: Boolean, default: false },
     lectureOrder:    { type: Number,  required: true },
+}, { _id: false });
+
+// ✅ NEW — quiz question schema
+const quizQuestionSchema = new mongoose.Schema({
+    questionId:     { type: String, required: true },
+    question:       { type: String, required: true },
+    options:        [{ type: String, required: true }], // array of 4 options
+    correctAnswer:  { type: Number, required: true },   // index 0-3 of correct option
 }, { _id: false });
 
 const chapterSchema = new mongoose.Schema({
@@ -14,6 +23,7 @@ const chapterSchema = new mongoose.Schema({
     chapterOrder:   { type: Number, required: true },
     chapterTitle:   { type: String, required: true },
     chapterContent: [lectureSchema],
+    quiz:           [quizQuestionSchema],               // ✅ NEW — quiz per chapter
 }, { _id: false });
 
 const courseSchema = new mongoose.Schema({
@@ -24,24 +34,13 @@ const courseSchema = new mongoose.Schema({
     isPublished:       { type: Boolean, default: true },
     discount:          { type: Number,  required: true, min: 0, max: 100 },
 
-    // ✅ NEW — department/category field
     category: {
         type: String,
-        default: 'Select',
+        default: 'Select Category',
         enum: [
-            'Technology',
-            'Web Development',
-            'Programming Languages',
-            'AI & Machine Learning',
-            'Design',
-            'Photography',
-            'Travel',
-            'Business',
-            'Music',
-            'Health & Fitness',
-            'Language',
-            'Finance',
-            'Marketing',
+            'Select Category','Technology', 'Web Development', 'AI & Machine Learning','Programming Languages',
+            'Design', 'Photography', 'Travel', 'Business',
+            'Music', 'Health & Fitness', 'Language', 'Finance', 'Marketing',
         ],
     },
 

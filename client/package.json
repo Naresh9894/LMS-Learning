@@ -11,9 +11,12 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.37.0",
+    "@tensorflow-models/coco-ssd": "^2.2.3",
+    "@tensorflow/tfjs": "^4.22.0",
     "axios": "^1.12.2",
     "framer-motion": "^12.35.2",
     "humanize-duration": "^3.33.0",
+    "jspdf": "^4.2.1",
     "quill": "^2.0.3",
     "rc-progress": "^4.0.0",
     "react": "^19.1.0",

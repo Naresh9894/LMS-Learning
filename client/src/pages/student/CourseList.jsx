@@ -81,7 +81,7 @@ const Sidebar = ({ activeCategory, setActiveCategory, filters, setFilters, count
                   </span>
                 </div>
                 <span className='text-xs px-1.5 py-0.5 rounded-full'
-                  style={{ background: isActive ? 'rgba(212,168,67,0.2)' : pageTheme.isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: isActive ? theme.gold.bright : pageTheme.textMuted }}>
+                  style={{ background: isActive ? 'rgba(212,168,67,0.2)' : pageTheme.isDark ?  'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)', color: isActive ? theme.gold.bright : pageTheme.textMuted }}>
                   {count}
                 </span>
               </motion.button>
